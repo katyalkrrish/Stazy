@@ -1,7 +1,7 @@
 const express = require("express");
 const app= express();
 const mongoose = require("mongoose");
-const listing = require("../majorproject/models/listing.js")
+const listing = require("./models/listing.js")
 const path = require("path");
 const methodOverride = require('method-override');
 const ejsmate= require("ejs-mate");
