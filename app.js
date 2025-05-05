@@ -21,7 +21,7 @@ app.set("view engine","ejs");
 app.set("views",path.join(__dirname,"views"));
 
 const validateListing = (req,res,next)=>{
-    let {error} = listingSchema.validate(req.body);
+    let {error} = (req.body);
     // console.log(result);
     
     if(error){
@@ -39,7 +39,7 @@ main()
 }).catch(err => console.log(err));
 
 async function main() {
-    await mongoose.connect('mongodb+srv://katyalkrrish:PjLWZtC93IKNZO3y@cluster0.irbeqgw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0');
+    await mongoose.connect('mongodb://127.0.0.1:27017/wanderlust');
     };
 
 app.get("/",(req,res)=>{
@@ -94,11 +94,8 @@ app.get("/listing/:id",wrapAsync( async (req,res)=>{
 
 // Create route
 
-app.post("/listings",validateListing,wrapAsync( async(req,res,next)=>{
+app.post("/listings", wrapAsync(async(req,res,next)=>{
    
-   
-
-
 // console.log(newlisting);
 const newlisting =new listing(req.body.listing);
 // console.log(newlisting);
@@ -126,7 +123,7 @@ app.get("/listings/:id/edit" , wrapAsync(async(req,res)=>{
 
 //update route
 
-app.put("/listing/:id",validateListing,wrapAsync(async(req,res)=>{
+app.put("/listing/:id",wrapAsync(async(req,res)=>{
     
     let {id}= req.params;
     if(!req.body.listing){
@@ -154,8 +151,10 @@ app.all("/listings/*",(req,res,next)=>{
 
 app.use((err,req,res,next)=>{
     let {StatusCode=500,message}=err;
+    console.log(err);
+    
 res.status(StatusCode).render("error.ejs",{StatusCode,message});
-    // res.status(StatusCode).send(message);
+    res.status(StatusCode).send(message);
 });
 
 
@@ -168,4 +167,4 @@ res.status(StatusCode).render("error.ejs",{StatusCode,message});
 app.listen(3000,()=>{
     console.log("hello bhai chal gya");
     console.log("http://localhost:3000/listings")
-})
+});
