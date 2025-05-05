@@ -39,7 +39,7 @@ main()
 }).catch(err => console.log(err));
 
 async function main() {
-    await mongoose.connect('mongodb://127.0.0.1:27017/wanderlust');
+    await mongoose.connect('mongodb+srv://katyalkrrish:PjLWZtC93IKNZO3y@cluster0.irbeqgw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0');
     };
 
 app.get("/",(req,res)=>{
