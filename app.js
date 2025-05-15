@@ -120,7 +120,7 @@ res.redirect("/listings");
 }));
 
 //edit route
-app.get("/listings/:id/edit",validateListing, wrapAsync(async(req,res)=>{
+app.get("/listings/:id/edit", wrapAsync(async(req,res)=>{
     // console.log("inside edit rout");
     
     let {id}= req.params;
