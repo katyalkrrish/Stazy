@@ -53,7 +53,7 @@ main()
 }).catch(err => console.log(err));
 
 async function main() {
-    await mongoose.connect('mongodb+srv://katyalkrrish:<db_password>@cluster0.irbeqgw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0');
+    await mongoose.connect('mongodb+srv://katyalkrrish:PjLWZtC93IKNZO3y@cluster0.irbeqgw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0');
     };
 
 app.get("/",(req,res)=>{
