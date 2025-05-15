@@ -16,3 +16,17 @@
       }, false)
     })
   })()
+
+
+  const rating = document.querySelector(".rating");
+
+  rating.addEventListener("input", (e) => {
+    const value = e.target.value;
+    e.target.style.setProperty('--value', value);
+  });
+
+  // Optional: Set initial value on load
+  window.addEventListener('DOMContentLoaded', () => {
+    const value = rating.value;
+    rating.style.setProperty('--value', value);
+  });
