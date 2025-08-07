@@ -1,15 +1,117 @@
 <% layout("/layouts/boilerplate")%>
 <body>
+   
     
     <!-- <form action="/listing/new" method="GET">
         <button>Create New Listing</button>
     </form> -->
 
-    <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-5">
+    <style>
+        #filters{
+         text-align:center ;
+         display: flex; 
+         flex-wrap: wrap;
+         align-items: center;
+         justify-content: space-between;
+        }
+        .filter{
+            text-align: center;
+            margin-right:2rem ;
+            margin-top: 2rem;
+            opacity: 0.7;
+        }
+        .filter:hover{
+            opacity: 1;
+            cursor:pointer;
+        }
+        .filter p{
+            font-size: 0.8rem;
+        }
+        .tax-info{
+            display: none;
+        }
+        .tax-toggle{
+            border: 1px solid black;
+            border-radius: 1rem;
+            height: 3.25rem;
+            padding: 1rem;
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            margin-top: 1rem;
+        }
+        
+        .
+    </style>
+    <div id="filters">
+        <div class="filter">
+          <div>
+             <i class="fa-solid fa-fire"></i>
+          </div> 
+          <p>Trending</p> 
+        </div>
+        <div class="filter">
+          <div>
+            <i class="fa-solid fa-bed"></i>
+          </div> 
+          <p>Rooms</p> 
+        </div>
+        <div class="filter">
+          <div>
+           <i class="fa-solid fa-mountain-city"></i>
+          </div> 
+          <p>Iconic Cities</p> 
+        </div>
+        <div class="filter">
+          <div>
+            <i class="fa-brands fa-fort-awesome"></i>
+          </div> 
+          <p>Castles</p> 
+        </div>
+        <div class="filter">
+          <div>
+          <i class="fa-solid fa-person-swimming"></i>
+          </div> 
+          <p>Amazing pools</p> 
+        </div>
+        <div class="filter">
+          <div>
+          <i class="fa-solid fa-cow"></i>
+          </div> 
+          <p>Farms</p> 
+        </div>
+        <div class="filter">
+          <div>
+        <i class="fa-solid fa-snowman"></i>
+          </div> 
+          <p>Arctic</p> 
+        </div>
+        <div class="filter">
+          <div>
+            <i class="fa-solid fa-tree"></i>
+          </div> 
+          <p>Treehouses</p>
+        </div>
+        <div class="filter">
+          <div>
+            <i class="fa-solid fa-umbrella-beach"></i>
+          </div> 
+          <p>Beachfront</p>
+        </div>
+
+        <div class=" tax-toggle">
+            <div class="form-check-reverse form-switch">
+  <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
+  <label class="form-check-label" for="switchCheckDefault">Display Taxes</label>
+</div>
+        </div>
+    </div>
+
+    <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
         <% for(let Listing of allistings){ %>
-            <a href="/listing/<%=Listing._id%>" class="listing-link">
+            <a href="/listings/<%=Listing._id%>" class="listing-link">
             <div class="card col listing-card" >
-          <img src="<%= Listing.url %>" class="card-img-top" alt="Listing_image" style="height:20rem">
+          <img src="<%= Listing.Image.url %>" class="card-img-top" alt="Listing_image" style ="height:20rem">
           <div class="card-img-overlay">
             
           
@@ -19,8 +121,10 @@
                
                 <br>
                 <p>
-                ₹ <%= Listing.price %>/night
+                ₹ <%= Listing.price.toLocaleString("en-IN") %>/night
+                   <i class="tax-info"> &nbsp; +18% GST</i>
                     </p>
+                 
                     </p>
             </div>
         </div>
@@ -30,3 +134,13 @@
     
 
 </body>
+
+<script>
+    let taxswitch = document.getElementById("switchCheckDefault");
+    taxswitch.addEventListener("click",()=>{
+        let taxInfo = document.getElementsByClassName("tax-info");
+        for(info of taxInfo){
+            info.style.display =  taxswitch.checked ? "inline" : "none";
+        }
+    })
+</script>
