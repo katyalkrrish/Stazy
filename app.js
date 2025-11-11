@@ -1,5 +1,5 @@
-if(process.env.NODE_ENV!="production"){
-require('dotenv').config();
+if (process.env.NODE_ENV !== "production") {
+    require('dotenv').config();
 }
 
 // console.log(process.env.SECRET);
@@ -23,10 +23,9 @@ const passport= require("passport");
 const LocalStrategy= require("passport-local");
 const User= require("./models/user.js")
 
-// Prefer ALTLASDB_URL (current), but also accept common alternates for flexibility
+// Support multiple possible env names for flexibility (Render vs local)
 let urldb = process.env.ALTLASDB_URL || process.env.ATLASDB_URL || process.env.MONGODB_URI || process.env.MONGO_URL;
-// Redacted URI for logs (do not print real password)
-const redactedUri = urldb ? urldb.replace(/(mongodb(?:\+srv)?:\/\/[^:]+):[^@]+@/i, '$1:<password>@') : 'MISSING';
+const redactedUri = urldb ? urldb.replace(/(mongodb(?:\+srv)?:\/\/[^:]+):[^@]+@/, '$1:<password>@') : 'MISSING';
 console.log('DB URI (redacted):', redactedUri);
 
 app.engine('ejs',ejsmate);
@@ -43,27 +42,25 @@ app.set("views",path.join(__dirname,"views"));
 
 
 
-// Robust DB connect with simple retry/backoff to handle transient failures in cloud
 async function connectWithRetry(attempt = 1) {
+    if (!urldb) {
+        console.error('No MongoDB URI found in environment variables.');
+        return;
+    }
     try {
-        await mongoose.connect(urldb, {
-            // These options are safe with current mongoose+driver
-            serverSelectionTimeoutMS: 8000
-        });
-        console.log("connection formed");
+        await mongoose.connect(urldb, { serverSelectionTimeoutMS: 8000 });
+        console.log('MongoDB connection established');
     } catch (err) {
-        const code = err && (err.code || err.name || err.message);
-        console.error(`DB connection failed (attempt ${attempt}):`, code);
+        console.error(`MongoDB connect failed (attempt ${attempt}):`, err.code || err.message);
         if (attempt < 5) {
             const wait = attempt * 2000;
-            console.log(`Retrying in ${wait}ms... If deploying on Render, ensure Atlas Network Access allows the service's outbound IP or temporarily 0.0.0.0/0.`);
+            console.log(`Retrying in ${wait}ms... Ensure Atlas allows this service's outbound IP (or temporarily whitelist 0.0.0.0/0).`);
             setTimeout(() => connectWithRetry(attempt + 1), wait);
         } else {
-            console.error('All DB connection attempts failed. Check Atlas IP Access List and credentials.');
+            console.error('All retry attempts exhausted.');
         }
     }
 }
-
 connectWithRetry();
 
 
@@ -122,12 +119,17 @@ app.use((req,res,next)=>{
 // })
 
 
-app.use("/listings",listingsRouter);
-app.use("/listings/:id/reviews",reviewRouter);
-app.use("/",userRouter);
+app.use("/listings", listingsRouter);
+app.use("/listings/:id/reviews", reviewRouter);
+app.use("/", userRouter);
 
-app.all("*",(req,res,next)=>{
-    next(new ExpressError(404,"Page Not Found"));
+// Root redirect & health check for Render
+app.get('/', (req, res) => res.redirect('/listings'));
+app.get('/_health', (req, res) => res.send('ok'));
+
+app.all("*", (req, res, next) => {
+    console.warn(`404 Not Found: ${req.method} ${req.originalUrl}`);
+    next(new ExpressError(404, "Page Not Found"));
 });
 
 app.use((err,req,res,next)=>{
@@ -139,7 +141,8 @@ app.use((err,req,res,next)=>{
 
 
 
-app.listen(4000,()=>{
-    console.log("hello bhai chal gya");
-    console.log("http://localhost:4000/listings")
+const PORT = process.env.PORT || 4000; // Render supplies PORT
+app.listen(PORT, () => {
+    console.log('Server listening on port', PORT);
+    console.log(`Local listings URL: http://localhost:${PORT}/listings`);
 });
