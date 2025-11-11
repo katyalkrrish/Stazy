@@ -23,7 +23,11 @@ const passport= require("passport");
 const LocalStrategy= require("passport-local");
 const User= require("./models/user.js")
 
-let urldb = process.env.ALTLASDB_URL;
+// Prefer ALTLASDB_URL (current), but also accept common alternates for flexibility
+let urldb = process.env.ALTLASDB_URL || process.env.ATLASDB_URL || process.env.MONGODB_URI || process.env.MONGO_URL;
+// Redacted URI for logs (do not print real password)
+const redactedUri = urldb ? urldb.replace(/(mongodb(?:\+srv)?:\/\/[^:]+):[^@]+@/i, '$1:<password>@') : 'MISSING';
+console.log('DB URI (redacted):', redactedUri);
 
 app.engine('ejs',ejsmate);
 
@@ -39,16 +43,28 @@ app.set("views",path.join(__dirname,"views"));
 
 
 
-main()
-    .then(()=>{
-    console.log("connection formed");
-    
-}).catch(err => console.log(err));
+// Robust DB connect with simple retry/backoff to handle transient failures in cloud
+async function connectWithRetry(attempt = 1) {
+    try {
+        await mongoose.connect(urldb, {
+            // These options are safe with current mongoose+driver
+            serverSelectionTimeoutMS: 8000
+        });
+        console.log("connection formed");
+    } catch (err) {
+        const code = err && (err.code || err.name || err.message);
+        console.error(`DB connection failed (attempt ${attempt}):`, code);
+        if (attempt < 5) {
+            const wait = attempt * 2000;
+            console.log(`Retrying in ${wait}ms... If deploying on Render, ensure Atlas Network Access allows the service's outbound IP or temporarily 0.0.0.0/0.`);
+            setTimeout(() => connectWithRetry(attempt + 1), wait);
+        } else {
+            console.error('All DB connection attempts failed. Check Atlas IP Access List and credentials.');
+        }
+    }
+}
 
-async function main() {
-
-    await mongoose.connect(urldb);
-    };
+connectWithRetry();
 
 
     const store = MongoStore.create({
@@ -123,7 +139,7 @@ app.use((err,req,res,next)=>{
 
 
 
-app.listen(3000,()=>{
+app.listen(4000,()=>{
     console.log("hello bhai chal gya");
-    console.log("http://localhost:3000/listings")
+    console.log("http://localhost:4000/listings")
 });
