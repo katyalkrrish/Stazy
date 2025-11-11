@@ -44,13 +44,13 @@
       </div>
       <div class="navbar-nav ms-auto ">
         <a class="nav-link" href="/listings/new"><b>Add Your's </b></a>
-        <% if(!currUser){ %>
+        <% if (typeof currUser === 'undefined' || !currUser) { %>
           <a class="nav-link" href="/signup"><b><i>Sign up</i></b></a>
           <a class="nav-link" href="/login"><b><i>Log in</i></b></a>
-          <%}%>
-            <% if(currUser){ %>
-              <a class="nav-link" href="/logout"><b><i>Log out</i></b></a>
-              <% } %>
+        <% } %>
+        <% if (typeof currUser !== 'undefined' && currUser) { %>
+          <a class="nav-link" href="/logout"><b><i>Log out</i></b></a>
+        <% } %>
       </div>
     </div>
   </div>
