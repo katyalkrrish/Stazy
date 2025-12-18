@@ -19,10 +19,16 @@
             margin-right:2rem ;
             margin-top: 2rem;
             opacity: 0.7;
+            text-decoration: none;
+            color: inherit;
         }
         .filter:hover{
             opacity: 1;
             cursor:pointer;
+        }
+        .filter.active{
+            opacity: 1;
+            border-bottom: 2px solid #000;
         }
         .filter p{
             font-size: 0.8rem;
@@ -42,60 +48,60 @@
         }
     </style>
     <div id="filters">
-        <div class="filter">
+        <a href="/listings/filter?category=Trending" class="filter <%= typeof selectedCategory !== 'undefined' && selectedCategory === 'Trending' ? 'active' : '' %>">
           <div>
              <i class="fa-solid fa-fire"></i>
           </div> 
           <p>Trending</p> 
-        </div>
-        <div class="filter">
+        </a>
+        <a href="/listings/filter?category=Rooms" class="filter <%= typeof selectedCategory !== 'undefined' && selectedCategory === 'Rooms' ? 'active' : '' %>">
           <div>
             <i class="fa-solid fa-bed"></i>
           </div> 
           <p>Rooms</p> 
-        </div>
-        <div class="filter">
+        </a>
+        <a href="/listings/filter?category=Iconic Cities" class="filter <%= typeof selectedCategory !== 'undefined' && selectedCategory === 'Iconic Cities' ? 'active' : '' %>">
           <div>
            <i class="fa-solid fa-mountain-city"></i>
           </div> 
           <p>Iconic Cities</p> 
-        </div>
-        <div class="filter">
+        </a>
+        <a href="/listings/filter?category=Castles" class="filter <%= typeof selectedCategory !== 'undefined' && selectedCategory === 'Castles' ? 'active' : '' %>">
           <div>
             <i class="fa-brands fa-fort-awesome"></i>
           </div> 
           <p>Castles</p> 
-        </div>
-        <div class="filter">
+        </a>
+        <a href="/listings/filter?category=Amazing pools" class="filter <%= typeof selectedCategory !== 'undefined' && selectedCategory === 'Amazing pools' ? 'active' : '' %>">
           <div>
           <i class="fa-solid fa-person-swimming"></i>
           </div> 
           <p>Amazing pools</p> 
-        </div>
-        <div class="filter">
+        </a>
+        <a href="/listings/filter?category=Farms" class="filter <%= typeof selectedCategory !== 'undefined' && selectedCategory === 'Farms' ? 'active' : '' %>">
           <div>
           <i class="fa-solid fa-cow"></i>
           </div> 
           <p>Farms</p> 
-        </div>
-        <div class="filter">
+        </a>
+        <a href="/listings/filter?category=Arctic" class="filter <%= typeof selectedCategory !== 'undefined' && selectedCategory === 'Arctic' ? 'active' : '' %>">
           <div>
         <i class="fa-solid fa-snowman"></i>
           </div> 
           <p>Arctic</p> 
-        </div>
-        <div class="filter">
+        </a>
+        <a href="/listings/filter?category=Treehouses" class="filter <%= typeof selectedCategory !== 'undefined' && selectedCategory === 'Treehouses' ? 'active' : '' %>">
           <div>
             <i class="fa-solid fa-tree"></i>
           </div> 
           <p>Treehouses</p>
-        </div>
-        <div class="filter">
+        </a>
+        <a href="/listings/filter?category=Beachfront" class="filter <%= typeof selectedCategory !== 'undefined' && selectedCategory === 'Beachfront' ? 'active' : '' %>">
           <div>
             <i class="fa-solid fa-umbrella-beach"></i>
           </div> 
           <p>Beachfront</p>
-        </div>
+        </a>
 
         <div class=" tax-toggle">
             <div class="form-check-reverse form-switch">

@@ -10,6 +10,74 @@ module.exports.index = async (req, res) => {
   res.render("listings/index.ejs", { allistings });
 };
 
+module.exports.searchListings = async (req, res) => {
+  const { q } = req.query;
+  if (!q || q.trim() === '') {
+    req.flash("error", "Please enter a search term");
+    return res.redirect("/listings");
+  }
+  
+  // Search in title, location, country, and description using case-insensitive regex
+  const allistings = await listing.find({
+    $or: [
+      { title: { $regex: q, $options: 'i' } },
+      { location: { $regex: q, $options: 'i' } },
+      { country: { $regex: q, $options: 'i' } },
+      { description: { $regex: q, $options: 'i' } }
+    ]
+  });
+  
+  if (allistings.length === 0) {
+    req.flash("error", `No listings found for "${q}"`);
+    return res.redirect("/listings");
+  }
+  
+  res.render("listings/index.ejs", { allistings });
+};
+
+module.exports.filterListings = async (req, res) => {
+  const { category } = req.query;
+  if (!category) {
+    return res.redirect("/listings");
+  }
+  
+  // Define keywords for each category
+  const categoryKeywords = {
+    "Trending": ["popular", "trending", "luxury", "exclusive", "modern"],
+    "Rooms": ["room", "bedroom", "suite", "apartment", "studio"],
+    "Iconic Cities": ["city", "urban", "downtown", "metro", "metropolitan", "new york", "paris", "london", "tokyo", "dubai"],
+    "Castles": ["castle", "palace", "manor", "estate", "historic", "fortress"],
+    "Amazing pools": ["pool", "swimming", "poolside", "infinity pool", "heated pool"],
+    "Farms": ["farm", "ranch", "countryside", "rural", "barn", "farmhouse", "agricultural"],
+    "Arctic": ["arctic", "snow", "winter", "ski", "mountain", "cold", "alpine", "northern"],
+    "Treehouses": ["treehouse", "tree house", "forest", "canopy", "woods", "treetop"],
+    "Beachfront": ["beach", "beachfront", "ocean", "sea", "coastal", "seaside", "waterfront", "shore"]
+  };
+  
+  const keywords = categoryKeywords[category];
+  if (!keywords) {
+    return res.redirect("/listings");
+  }
+  
+  // Search for listings matching any of the keywords
+  const allistings = await listing.find({
+    $or: keywords.map(keyword => ({
+      $or: [
+        { title: { $regex: keyword, $options: 'i' } },
+        { description: { $regex: keyword, $options: 'i' } },
+        { location: { $regex: keyword, $options: 'i' } }
+      ]
+    }))
+  });
+  
+  if (allistings.length === 0) {
+    req.flash("error", `No listings found in ${category} category`);
+    return res.redirect("/listings");
+  }
+  
+  res.render("listings/index.ejs", { allistings, selectedCategory: category });
+};
+
 module.exports.rendernewform = (req, res) => {res.render("listings/new.ejs");};
 
 module.exports.showlisting = async (req, res) => {
