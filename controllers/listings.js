@@ -35,6 +35,42 @@ module.exports.searchListings = async (req, res) => {
   res.render("listings/index.ejs", { allistings });
 };
 
+module.exports.getSuggestions = async (req, res) => {
+  const { q } = req.query;
+  if (!q || q.trim() === '') {
+    return res.json([]);
+  }
+  
+  try {
+    const query = q.trim();
+    
+    // Search for listings matching the query
+    const listings = await listing.find({
+      $or: [
+        { title: { $regex: query, $options: 'i' } },
+        { location: { $regex: query, $options: 'i' } },
+        { country: { $regex: query, $options: 'i' } }
+      ]
+    }).limit(5);
+    
+    // Extract unique suggestions from titles, locations, and countries
+    const suggestions = new Set();
+    
+    listings.forEach(list => {
+      if (list.title) suggestions.add(list.title);
+      if (list.location) suggestions.add(list.location);
+      if (list.country) suggestions.add(list.country);
+    });
+    
+    // Return as array, limited to 5 suggestions
+    const result = Array.from(suggestions).slice(0, 5);
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.json([]);
+  }
+};
+
 module.exports.filterListings = async (req, res) => {
   const { category } = req.query;
   if (!category) {

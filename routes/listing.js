@@ -15,6 +15,9 @@ router.route("/")
 //search route
 router.get("/search", wrapAsync(listingcontroller.searchListings));
 
+//suggestions route
+router.get("/suggestions", wrapAsync(listingcontroller.getSuggestions));
+
 //filter route
 router.get("/filter", wrapAsync(listingcontroller.filterListings));
 
